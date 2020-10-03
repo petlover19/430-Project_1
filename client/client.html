@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Our simple HTTP server</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+
+    <script>
+        "use strict";
+        const parseJSON = (xhr, content) => {
+            if (xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
+                const obj = JSON.parse(xhr.response);
+                console.dir(obj);
+
+                if (obj.message) {
+                    content.innerHTML += `<p>${obj.message}</p>`;
+                }
+            }
+        };
+
+        const handleResponse = (xhr) => {
+            const content = document.querySelector('#content');
+
+            switch (xhr.status) {
+                case 200:
+                    content.innerHTML = '<b>Success!</b>';
+                    break;
+                case 201:
+                    content.innerHTML = '<b>Created!</b>';
+                    break;
+                case 204:
+                    content.innerHTML = '<b>Updated (No Content)!</b>';
+                    break;
+                case 400:
+                    content.innerHTML = '<b>Bad Request!</b>';
+                    break;
+                default:
+                    content.innerHTML = '<b>Error code not implemented by client</b>';
+            }
+
+            parseJSON(xhr, content);
+        };
+
+        const sendPost = (e, recipeForm) => {
+            e.preventDefault();
+
+            const recipeAction = recipeForm.getAttribute("action");
+            const recipeMethod = recipeForm.getAttribute("method");
+
+            const recipeField = recipeForm.querySelector("#recipeField");
+            const ingredientsField = recipeForm.querySelector("#ingredientsField");
+            const directionsField = recipeForm.querySelector("#directionsField");
+
+            const xhr = new XMLHttpRequest();
+            xhr.open(recipeMethod, recipeAction); // NEW - in the past we've been using "GET"
+
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            // what is "x-www-form-urlencoded"
+            // for GET we already saw it - ex. "/unauthorized?loggedIn=yes&valid=true"
+            // everything after the question mark is urlencoded
+            // multiple key=value pairs are separated by the &
+            // HTML forms also encode their values this way
+            // in the form below the values are encoded as "name=someValue&ingredients=someValue"
+            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
+
+            xhr.onload = () => handleResponse(xhr);
+
+            const formData = `name=${nameField.value}&ingredients=${ingredientsField.value}&directions=${directionsField.value}`;
+            xhr.send(formData); // NEW - in the past we haven't been sending anything here because ...
+            // ... our data has always been encoded in the URL
+            /// ... instead of being in a separate file as it is now
+
+            /*
+            	Things to try:
+            	1) Add new users, we should see "201 Created" status code
+            	- look in the Request tab of the debugger to see the form data
+            	- Recall that every time the server reboots we lose our data because `users` in jsonResponses.js is re-initialized 
+            	2) Update a new user (i.e. send the same name) again - we'll see "204 No Content"
+            	3) Leave off name or ingredients and get back a "400 Bad Request"
+            	4) In the debugger, you can see that the Network request is being made via XHR
+            	5) Disable the XHR and you can see the Network request is being made via the form (and we're getting taken to a new page)
+            	6) Re-enable the XHR and get rid of the `action` and `method` of the form and make the XHR work
+            */
+
+            return false; // prevents event bubbling
+        };
+
+        const init = () => {
+            const recipeForm = document.querySelector('#recipeForm');
+
+            const makeCard = (e) => sendPost(e, recipeForm);
+
+            recipeForm.addEventListener('submit', makeCard);
+        };
+
+        window.onload = init;
+    </script>
+</head>
+
+<body>
+    <section id="top">
+        <h3>Recipe Card Box</h3>
+        <form id="recipeForm" action="/makeCard" method="post">
+            <label for="name">Name: </label>
+            <input id="nameField" type="text" name="name" />
+            <label for="ingredients">Ingredients: </label>
+            <input id="ingredientsField" type="text" name="ingredients" />
+            <label for="directions">Directions: </label>
+            <input id="directionsField" type="text" name="directions" />
+            <input type="submit" value="makeCard " />
+        </form>
+        <p>Go to <a href="/getRecipes ">/Get Recipes</a> to see users.</p>
+    </section>
+    <section id="content ">
+    </section>
+</body>
+
+</html>
