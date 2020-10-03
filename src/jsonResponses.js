@@ -1,7 +1,3 @@
-// Note this object is purely in memory
-// When node shuts down this will be cleared.
-// Same when your heroku app shuts down from inactivity
-// We will be working with databases in the next few weeks.
 const recipes = {};
 
 const respondJSON = (request, response, status, object) => {
