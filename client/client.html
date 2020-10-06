@@ -61,9 +61,15 @@
 
             xhr.onload = () => handleResponse(xhr);
 
-            const formData = `name=${nameField.value}&ingredients=${ingredientsField.value}&directions=${directionsField.value}`;
+            let ing = ingredientsField.value.split('\n');
+            let direct = directionsField.value.split('\n');
+            console.log(ing, direct)
+
+            const formData = `name=${nameField.value}&ingredients=${ing}&directions=${direct}`;
+
             xhr.send(formData);
 
+            // console.log("form data: ", formData);
 
             return false; // prevents event bubbling
         };
@@ -90,9 +96,11 @@
             <textarea id="ingredientsField" type="text" name="ingredients" rows=5></textarea>
             <label for="directions">Directions: </label>
             <textarea id="directionsField" type="text" name="directions" rows=5></textarea>
-            <input type="submit" value="makeCard " />
+            <br>
+            <input type="submit" value=" Make Card " />
+            <span>
         </form>
-        <p>Go to <a href="/getRecipes ">/Get Recipes</a> to see users.</p>
+        <p>Go to <a href="/getRecipes ">/getRecipes</a> to see recipies.</p>
     </section>
     <section id="content">
     </section>
