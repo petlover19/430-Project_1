@@ -77,9 +77,9 @@
         const init = () => {
             const recipeForm = document.querySelector('#recipeForm');
 
-            const makeCard = (e) => sendPost(e, recipeForm);
+            const addRecipe = (e) => sendPost(e, recipeForm);
 
-            recipeForm.addEventListener('submit', makeCard);
+            recipeForm.addEventListener('submit', addRecipe);
         };
 
         window.onload = init;
@@ -89,7 +89,7 @@
 <body>
     <section id="top">
         <h3>Recipe Card Box</h3>
-        <form id="recipeForm" action="/makeCard" method="post">
+        <form id="recipeForm" action="/addRecipe" method="post">
             <label for="name">Name: </label>
             <input id="nameField" type="text" name="name" />
             <label for="ingredients">Ingredients: </label>
