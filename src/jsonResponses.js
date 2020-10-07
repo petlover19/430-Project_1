@@ -11,19 +11,17 @@ const respondJSONMeta = (request, response, status) => {
     response.end();
 };
 
+
 const getRecipes = (request, response) => {
-    console.log('getRecipes');
     const responseJSON = {
         recipes,
     };
-    console.log('recipes', recipes);
     respondJSON(request, response, 200, responseJSON);
 };
 
 const addRecipe = (request, response, body) => {
-    console.log('recipe has been added');
     const responseJSON = {
-        message: 'all fields are required required',
+        message: 'all fields are required',
     };
 
     if (!body.name || !body.ingredients || !body.directions) {
@@ -34,7 +32,7 @@ const addRecipe = (request, response, body) => {
     // got all params entered
     let responseCode = 201; // "created"
     if (recipes[body.name]) { // recipe exists
-        responseCode = 204; // updating, so "no content"
+        responseCode = 204; // updated
     } else {
         recipes[body.name] = {}; // make a new recipe
     }

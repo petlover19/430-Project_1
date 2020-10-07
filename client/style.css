@@ -9,31 +9,56 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-size: 100% 100%;
+        font-family: 'Indie Flower', cursive;
     }
-    /* .background {
-        background-image: url("./assets/recipe_bkg.jpg");
-    } */
     
     #top {
         text-align: center;
         margin: 0 auto;
     }
     
-    #top h1 {
-        font-size: 2em;
+    #top p,
+    #top a {
+        color: #e1bd2d;
+        text-shadow: 3px 3px 3px #352b00;
     }
     
-    #content {
-        margin-top: 100px;
-        font-size: 2em;
+    #top label {
+        color: #cc6887;
+    }
+    
+    #title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 3em;
+        color: #e1bd2d;
+    }
+    
+    #message {
         text-align: center;
+        color: #fdcfde;
     }
     
-    #content p {
+    #message p {
         width: 400px;
         margin: 0 auto;
     }
     
     label {
         display: block;
+    }
+    
+    .card_list {
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        display: flex;
+    }
+    
+    .cards {
+        background-color: rgb(235, 211, 180);
+        background-image: url("https://img.freepik.com/free-photo/brown-paper-texture-background_1373-528.jpg?size=338&ext=jpg");
+        padding: 10px;
+        margin: 20px;
+        width: 20%;
+        min-width: 240px;
+        border-radius: 2.5%;
     }

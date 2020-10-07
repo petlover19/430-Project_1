@@ -4,43 +4,45 @@
 <head>
     <title>Our simple HTTP server</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Indie+Flower&display=swap" rel="stylesheet">
 
+    <!-- <script type="text/javascript" src="client_src/client.js">
+    </script> -->
     <script>
         "use strict";
 
-        let content = document.querySelector("#content");
-
-        const parseJSON = (xhr, content) => {
+        const parseJSON = (xhr, message) => {
             if (xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
                 const obj = JSON.parse(xhr.response);
                 console.dir(obj);
 
                 if (obj.message) {
-                    content.innerHTML += `<p>${obj.message}</p>`;
+                    message.innerHTML += `<p>${obj.message}</p>`;
                 }
             }
         };
 
         const handleResponse = (xhr) => {
+            const message = document.querySelector("#message");
 
             switch (xhr.status) {
                 case 200:
-                    content.innerHTML = '<b>Success!</b>';
+                    message.innerHTML = '<b>Success!</b>';
                     break;
                 case 201:
-                    content.innerHTML = '<b>Created!</b>';
+                    message.innerHTML = '<b>Created!</b>';
                     break;
                 case 204:
-                    content.innerHTML = '<b>Updated (No Content)!</b>';
+                    message.innerHTML = '<b>Updated (No Content)!</b>';
                     break;
                 case 400:
-                    content.innerHTML = '<b>Bad Request!</b>';
+                    message.innerHTML = '<b>Bad Request!</b>';
                     break;
                 default:
-                    content.innerHTML = '<b>Error code not implemented by client</b>';
+                    message.innerHTML = '<b>Error code not implemented by client</b>';
             }
 
-            parseJSON(xhr, content);
+            parseJSON(xhr, message);
         };
 
         const sendPost = (e, recipeForm) => {
@@ -49,7 +51,7 @@
             const recipeAction = recipeForm.getAttribute("action");
             const recipeMethod = recipeForm.getAttribute("method");
 
-            const recipeField = recipeForm.querySelector("#recipeField");
+            const nameField = recipeForm.querySelector("#nameField");
             const ingredientsField = recipeForm.querySelector("#ingredientsField");
             const directionsField = recipeForm.querySelector("#directionsField");
 
@@ -69,26 +71,98 @@
 
             xhr.send(formData);
 
-            // console.log("form data: ", formData);
+            // newCard(xhr.response)
+            // console.log("xhr:", xhr.response)
 
             return false; // prevents event bubbling
         };
 
+        const newCard = (results) => {
+            console.log("newCard called");
+            console.log("r:", results);
+            for (r in results.recipes) {
+
+                let card = new Card(r);
+                card.makeCard();
+            }
+        }
+
         const init = () => {
             const recipeForm = document.querySelector('#recipeForm');
 
-            const addRecipe = (e) => sendPost(e, recipeForm);
-
+            const addRecipe = (e) => {
+                sendPost(e, recipeForm);
+            }
             recipeForm.addEventListener('submit', addRecipe);
         };
 
         window.onload = init;
     </script>
+
+    <!-- 
+______________________________________
+_______________________________________
+_______________________________________
+
+     -->
+
+    <!-- <script type="text/javascript" src="client_src/Card.js"></script> -->
+    <script>
+        class Card {
+            constructor(recipe) {
+                this.name = recipe.name;
+                this.ingredients = recipe.ingredients;
+                this.directions = recipe.directions;
+            }
+
+            makeCard() {
+                console.log("makeCard class called and created");
+
+                let card_list = document.querySelector("#card_list");
+                let card = document.createElement("DIV");
+                let name = document.createElement("h2");
+                let in_label = document.createElement("h3");
+                let dir_label = document.createElement("h3");
+
+                //append the new card to the rest
+                card.classList.add("cards");
+                card_list.appendChild(card);
+
+                //name
+                name.appendChild(document.createTextNode(this.name))
+                card.appendChild(name);
+
+                //ingredients
+                in_label.appendChild(document.createTextNode("Ingredients: "));
+                card.appendChild(in_label);
+
+                let in_list = document.createElement("ul");
+                for (i in this.ingredients) {
+                    let ing = document.createElement("li");
+                    ing.appendChild(document.createTextNode(i));
+                    in_list.appendChild(ing);
+                }
+
+                //directions
+                in_label.appendChild(document.createTextNode("Directions: "));
+                card.appendChild(dir_label);
+
+                let dir_list = document.createElement("ol");
+                for (d in this.directions) {
+                    let dir = document.createElement("li");
+                    dir.appendChild(document.createTextNode(d));
+                    dir_list.appendChild(dir);
+                }
+            }
+
+        }
+    </script>
+
 </head>
 
 <body>
     <section id="top">
-        <h3>Recipe Card Box</h3>
+        <h1 id=title>Recipe Card Box</h1>
         <form id="recipeForm" action="/addRecipe" method="post">
             <label for="name">Name: </label>
             <input id="nameField" type="text" name="name" />
@@ -97,11 +171,65 @@
             <label for="directions">Directions: </label>
             <textarea id="directionsField" type="text" name="directions" rows=5></textarea>
             <br>
-            <input type="submit" value=" Make Card " />
+            <input type="submit" value=" Make Card" id=submit/>
         </form>
-        <p>Go to <a href="/getRecipes ">/getRecipes</a> to see recipies.</p>
+        <p>Go to <a href="/getRecipes ">/getRecipes</a> to see recipes.</p>
     </section>
-    <section id="content">
+    <section id=message> </section>
+    <section id="recipeCards" class=card_list>
+        <div id=testCard class=cards>
+
+            <h2>name h2</h2>
+
+            <h3>Ingredients: h3</h3>
+            <ul>
+                <li>in1</li>
+                <li>in2</li>
+            </ul>
+            <h3>Directions: (h3)</h3>
+            <ol>
+                <li>D1 ol-li</li>
+                <li>D2 ol-li</li>
+            </ol>
+        </div>
+
+        <div id=grilledCheese class=cards>
+
+            <h2>Grilled Cheese</h2>
+
+            <h3>Ingredients:</h3>
+            <ul>
+                <li>bread</li>
+                <li>cheese</li>
+            </ul>
+            <h3>Directions:</h3>
+            <ol>
+                <li>cut or shread cheese</li>
+                <li>place inbetween bread slices</li>
+                <li>cook in pannini press till the bread is toasty brown</li>
+            </ol>
+
+        </div>
+
+        <div id=mashedPotatoes class=cards>
+
+            <h2>Mashed Potatoes</h2>
+
+            <h3>Ingredients:</h3>
+            <ul>
+                <li>potatoes</li>
+                <li>butter</li>
+                <li>milk</li>
+            </ul>
+            <h3>Directions:</h3>
+            <ol>
+                <li>peel the potatoes</li>
+                <li>cut potatoes into cubes</li>
+                <li>boil potatoes until soft</li>
+                <li>mash potatoes</li>
+                <li>add in milk with butter</li>
+            </ol>
+        </div>
     </section>
 </body>
 
