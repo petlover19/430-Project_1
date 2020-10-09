@@ -1,4 +1,5 @@
 "use strict";
+let recipes = [];
 
 const parseJSON = (xhr, content) => {
     if (xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
@@ -62,26 +63,49 @@ const sendPost = (e, recipeForm) => {
 
     xhr.send(formData);
 
-    newCard(xhr.response)
-    console.log("xhr:", xhr.response)
-
     return false; // prevents event bubbling
 };
 
 const newCard = (results) => {
-    console.log("newCard called");
-    for (r in results.recipes) {
-        let card = new Card(r);
-        card.makeCard();
+        console.log("newCard called");
+        for (let r in recipes) {
+            let card = new Card(r);
+            card.makeCard();
+        }
     }
+    //blob
+const getCards = () => {
+    const xhr = new XMLHttpRequest();
+    console.log("xhr", xhr)
+    xhr.onload = () => {
+
+        let obj = JSON.parse(xhr.response)
+        console.log("obj.recipes", obj.recipes);
+        let list = obj.recipes;
+        for (let l in list) {
+            let result = list[l];
+            recipes.push(result)
+        }
+        newCard();
+    }
+
+    xhr.open("GET", "/getRecipes");
+
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhr.send();
 }
+
 
 const init = () => {
     const recipeForm = document.querySelector('#recipeForm');
 
     const addRecipe = (e) => {
         sendPost(e, recipeForm);
+        getCards();
     }
+
     recipeForm.addEventListener('submit', addRecipe);
 };
 
