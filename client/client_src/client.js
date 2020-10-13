@@ -15,26 +15,26 @@ const parseJSON = (xhr, content) => {
 };
 
 const handleResponse = (xhr) => {
-    const content = document.querySelector("#content");
+    const message = document.querySelector("#message");
 
     switch (xhr.status) {
         case 200:
-            content.innerHTML = '<b>Success!</b>';
+            message.innerHTML = '<b>Success!</b>';
             break;
         case 201:
-            content.innerHTML = '<b>Created!</b>';
+            message.innerHTML = '<b>Created!</b>';
             break;
         case 204:
-            content.innerHTML = '<b>Updated (No Content)!</b>';
+            message.innerHTML = '<b>Updated (No Content)!</b>';
             break;
         case 400:
-            content.innerHTML = '<b>Bad Request!</b>';
+            message.innerHTML = '<b>Bad Request!</b>';
             break;
         default:
-            content.innerHTML = '<b>Error code not implemented by client</b>';
+            message.innerHTML = '<b>Error code not implemented by client</b>';
     }
 
-    parseJSON(xhr, content);
+    parseJSON(xhr, message);
 };
 
 const sendPost = (e, recipeForm) => {
@@ -66,14 +66,15 @@ const sendPost = (e, recipeForm) => {
     return false; // prevents event bubbling
 };
 
-const newCard = (results) => {
-        console.log("newCard called");
-        for (let r in recipes) {
-            let card = new Card(r);
-            card.makeCard();
-        }
+const newCard = () => {
+    console.log("recipes:", recipes);
+    for (let r in recipes) {
+        console.log("recipes[r]:", recipes[r]);
+        let card = new Card(recipes[r]);
+        card.makeCard();
     }
-    //blob
+}
+
 const getCards = () => {
     const xhr = new XMLHttpRequest();
     console.log("xhr", xhr)
@@ -82,11 +83,22 @@ const getCards = () => {
         let obj = JSON.parse(xhr.response)
         console.log("obj.recipes", obj.recipes);
         let list = obj.recipes;
+        recipes = [{
+            name: "Grilled Cheese",
+            ingredients: "bread,cheese",
+            directions: "cut or shread cheese,place inbetween bread slices,cook in pannini press till the bread is toasty brown"
+        }, {
+            name: "Mashed Potatoes",
+            ingredients: "potatoes,butter,milk",
+            directions: "peel the potatoes,cut potatoes into cubes,boil potatoes until soft,mash potatoes,add in milk with butter"
+        }];
         for (let l in list) {
             let result = list[l];
+            console.log("result: ", result);
             recipes.push(result)
+                // console.log("list recipe: ", result)
         }
-        newCard();
+        newCard(obj);
     }
 
     xhr.open("GET", "/getRecipes");
@@ -97,16 +109,32 @@ const getCards = () => {
     xhr.send();
 }
 
+const removeCards = () => {
+    // Get the element id
+    let rList = document.querySelector("#recipeCards");
+
+    // As long as recipeCards has a child node, remove it
+    while (rList.hasChildNodes()) {
+        rList.removeChild(rList.firstChild);
+    }
+
+}
+
 
 const init = () => {
     const recipeForm = document.querySelector('#recipeForm');
+    const show = document.querySelector('#show');
 
     const addRecipe = (e) => {
         sendPost(e, recipeForm);
+    }
+    const showRecipes = (e) => {
+        removeCards();
         getCards();
     }
 
     recipeForm.addEventListener('submit', addRecipe);
+    show.onclick = showRecipes;
 };
 
 window.onload = init;
